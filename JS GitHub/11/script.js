@@ -431,7 +431,7 @@ const deposit = mov => mov < 0;
 console.log(movements.some(deposit));
 console.log(movements.every(deposit));
 console.log(movements.filter(deposit));
-*/
+
 //flat(goes 1 level deep by default, but we can set depth) and flatMap
 const arr = [[1, 2, 3], [4, 5, 6], 7, 8];
 console.log(arr.flat()); // [1, 2, 3, 4, 5, 6, 7, 8]
@@ -451,3 +451,5 @@ const overallBalance2 = accounts
   .flatMap(acc => acc.movements)
   .reduce((acc, mov) => acc + mov, 0);
 console.log(overallBalance);
+*/
+
