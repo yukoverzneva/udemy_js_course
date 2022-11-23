@@ -37,11 +37,11 @@ console.log(document.body);
 
 const header = document.querySelector('.header'); //first element that matches the selector
 const allSections = document.querySelectorAll('.section'); //select multiple elements
-console.log(allSections); //NodeList
+// console.log(allSections); //NodeList
 
 document.getElementById('section--1');
 const allButtons = document.getElementsByTagName('button');
-console.log(allButtons); //HTMLCollection. Not NodeList, because it changes automatically when DOM changes
+// console.log(allButtons); //HTMLCollection. Not NodeList, because it changes automatically when DOM changes
 document.getElementsByClassName('btn'); //HTMLCollection
 
 //Creating and Inserting Elements
@@ -69,7 +69,7 @@ document
 //Styles
 message.style.backgroundColor = '#37383d';
 message.style.width = '120%';
-
+/*
 console.log(message.style.height); //Works only with inline styles that we set ourselves using the style property
 console.log(message.style.width); //120%
 //But there is a way to read from DOM
@@ -109,3 +109,36 @@ logo.classList.toggle('c');
 logo.classList.contains('c');
 //Don't use because this will overwrite all existing classes
 logo.className = 'jonas';
+*/
+//Smooth scrolling
+const btnScrollTo = document.querySelector('.btn--scroll-to');
+const section1 = document.querySelector('#section--1');
+
+btnScrollTo.addEventListener('click', function (e) {
+  const s1coords = section1.getBoundingClientRect();
+  console.log(s1coords);
+
+  console.log(e.target.getBoundingClientRect());
+
+  console.log(
+    'height/width viewport',
+    document.documentElement.clientHeight,
+    document.documentElement.clientWidth
+  );
+
+  //Scrolling
+  // window.scrollTo(
+  //   s1coords.left + window.pageXOffset,
+  //   s1coords.top + window.pageYOffset
+  // );
+  //Smoothing
+  //Old way
+  // window.scrollTo({
+  //   left: s1coords.left + window.pageXOffset,
+  //   top: s1coords.top + window.pageYOffset,
+  //   behavior: 'smooth',
+  // });
+  //Modern way
+  section1.scrollIntoView({ behavior: 'smooth' });
+});
+
