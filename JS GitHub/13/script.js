@@ -7,6 +7,8 @@ const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
 const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
+const btnScrollTo = document.querySelector('.btn--scroll-to');
+const section1 = document.querySelector('#section--1');
 
 const openModal = function (e) {
   e.preventDefault();
@@ -29,6 +31,78 @@ document.addEventListener('keydown', function (e) {
     closeModal();
   }
 });
+//Smooth scrolling
+btnScrollTo.addEventListener('click', function (e) {
+  const s1coords = section1.getBoundingClientRect();
+  console.log(s1coords);
+
+  console.log(e.target.getBoundingClientRect());
+
+  console.log(
+    'height/width viewport',
+    document.documentElement.clientHeight,
+    document.documentElement.clientWidth
+  );
+
+  //Scrolling
+  // window.scrollTo(
+  //   s1coords.left + window.pageXOffset,
+  //   s1coords.top + window.pageYOffset
+  // );
+  //Smoothing
+  //Old way
+  // window.scrollTo({
+  //   left: s1coords.left + window.pageXOffset,
+  //   top: s1coords.top + window.pageYOffset,
+  //   behavior: 'smooth',
+  // });
+  //Modern way
+  section1.scrollIntoView({ behavior: 'smooth' });
+});
+//Event Delegation: Implementing Page Navigation
+document.querySelectorAll('.nav__link').forEach(function (el) {
+  el.addEventListener('click', function (e) {
+    e.preventDefault();
+    const id = this.getAttribute('href');
+    console.log(id);
+    document.querySelector(id).scrollIntoView({ behavior: 'smooth' });
+  });
+});
+//Cleaner way of doing smooth page navigation using bubbling
+// //1. Add event listener to common parent element
+// //2. Determine what element originated the event
+// document.querySelector('.nav__links').addEventListener('click', function (e) {
+//   e.preventDefault();
+//   //Matching strategy
+//   if (e.target.classList.contains('.nav__link')) {
+//     const id = e.target.getAttribute('href');
+//     document.querySelector(id).scrollIntoView({ behavior: 'smooth' });
+//   }
+// });
+//Tabbed Component
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabsContent = document.querySelectorAll('.operations__content');
+
+// tabs.forEach(t => t.addEventListener('click', () => console.log('TAB')));//Is a bad practice, will slow down the page-> use event delegation
+tabsContainer.addEventListener('click', function (e) {
+  const clicked = e.target.closest('.operations__tab'); //Added closest to get a button, not a span
+
+  //Ignore clicks in area around buttons. Guard clause
+  if (!clicked) return;
+  //Remove active classes
+  tabs.forEach(t => t.classList.remove('operations__tab--active'));
+  tabsContent.forEach(c => c.classList.remove('operations__content--active'));
+  //Active tab
+  clicked.classList.add('operations__tab--active');
+  //Activate content area
+  document
+    .querySelector(`.operations__content--${clicked.dataset.tab}`)
+    .classList.add('operations__content--active');
+});
+/*/////////////////////////////////////////////////////
+LECTURES
+////////////////////////////////////////////////////
 
 //Selecting Elements
 console.log(document.documentElement); //entire <html>
@@ -109,36 +183,74 @@ logo.classList.toggle('c');
 logo.classList.contains('c');
 //Don't use because this will overwrite all existing classes
 logo.className = 'jonas';
-*/
-//Smooth scrolling
-const btnScrollTo = document.querySelector('.btn--scroll-to');
-const section1 = document.querySelector('#section--1');
 
-btnScrollTo.addEventListener('click', function (e) {
-  const s1coords = section1.getBoundingClientRect();
-  console.log(s1coords);
+//Types of Events and Event Handlers
+const h1 = document.querySelector('h1');
+//New way
+const alertH1 = function (e) {
+  alert('addEventListener: You are reading the heading! 🤓');
+  // h1.removeEventListener('mouseenter', alertH1);//You can remove listener at any time
+};
+h1.addEventListener('mouseenter', alertH1);
+setTimeout(() => h1.removeEventListener('mouseenter', alertH1), 3000);
+//Old way
+// h1.onmouseenter = function (e) {
+//   alert('addEventListener: You are reading the heading! 🤓');
+// };
+//Using HTML. <h1 onclick="alert('HTML alert')">
 
-  console.log(e.target.getBoundingClientRect());
+//Event Propagation: Bubbling and Capturing
+//Event Propagation
+//rgb(255,255,255)
+const randomInt = (min, max) =>
+  Math.floor(Math.random() * (max - min + 1) + min);
+const randomColor = () =>
+  `rgb(${randomInt(0, 255)},${randomInt(0, 255)},${randomInt(0, 255)})`;
+// console.log(randomColor(0,255));
+document.querySelector('.nav__link').addEventListener('click', function (e) {
+  this.style.backgroundColor = randomColor();
+  console.log('LINK', e.target, e.currentTarget);
+  console.log(e.currentTarget === this); //true. currentTarget is exactly the same as this
 
-  console.log(
-    'height/width viewport',
-    document.documentElement.clientHeight,
-    document.documentElement.clientWidth
-  );
-
-  //Scrolling
-  // window.scrollTo(
-  //   s1coords.left + window.pageXOffset,
-  //   s1coords.top + window.pageYOffset
-  // );
-  //Smoothing
-  //Old way
-  // window.scrollTo({
-  //   left: s1coords.left + window.pageXOffset,
-  //   top: s1coords.top + window.pageYOffset,
-  //   behavior: 'smooth',
-  // });
-  //Modern way
-  section1.scrollIntoView({ behavior: 'smooth' });
+  //Stop propagation
+  // e.stopPropagation(); //Event never arrived to .nav__links and .nav. Only .nav__link has color
 });
+document.querySelector('.nav__links').addEventListener('click', function (e) {
+  this.style.backgroundColor = randomColor();
+  console.log('CONTAINER', e.target, e.currentTarget);
+});
+document.querySelector('.nav').addEventListener(
+  'click',
+  function (e) {
+    this.style.backgroundColor = randomColor();
+    console.log('NAV', e.target, e.currentTarget);
+  }
+  // true. Implementing capturing -> NAV appears first in console (not used nowadays)
+);
 
+//DOM Traversing
+const h1 = document.querySelector('h1');
+//Going downwards: child
+console.log(h1.querySelectorAll('.highlight'));
+console.log(h1.childNodes);
+console.log(h1.children);
+h1.firstElementChild.style.color = 'white';
+h1.lastElementChild.style.color = 'red';
+//Going upwards: parents
+console.log(h1.parentNode);
+console.log(h1.parentElement);
+h1.closest('.header').style.background = 'var(--gradient-secondary)';
+h1.closest('h1').style.background = 'var(--gradient-primary)';
+//Going sideways: siblings. We can only access direct siblings: previous and next.
+console.log(h1.previousElementSibling);
+console.log(h1.nextElementSibling);
+
+console.log(h1.previousSibling);
+console.log(h1.nextSibling);
+
+//Trick to access all the siblings: moving up to parent and reading children
+console.log(h1.parentElement.children);
+[...h1.parentElement.children].forEach(function (el) {
+  if (el !== h1) el.style.transform = 'scale(0.5)';
+});
+*/
